@@ -1,0 +1,410 @@
+-- ==========================================
+-- ORION DEVS - INTERFAZ PROPIA (CYBER NEÓN)
+-- ==========================================
+
+local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
+local CoreGui = game:GetService("CoreGui")
+
+-- Destruir GUI anterior si existe
+if CoreGui:FindFirstChild("OrionDevsHub") then
+    CoreGui.OrionDevsHub:Destroy()
+end
+
+-- ==========================================
+-- FUNCIÓN SEGURA PARA CARGAR SCRIPTS
+-- ==========================================
+
+local function CargarScriptExterno(url, nombre)
+    local success, errorMsg = pcall(function()
+        loadstring(game:HttpGet(url))()
+    end)
+    
+    if success then
+        print("[ORION DEVS] Cargado exitosamente: " .. tostring(nombre))
+    else
+        warn("[ORION DEVS] Error en " .. tostring(nombre) .. ": " .. tostring(errorMsg))
+    end
+end
+
+-- ==========================================
+-- INTERFAZ PRINCIPAL
+-- ==========================================
+
+local OrionDevsHub = Instance.new("ScreenGui")
+OrionDevsHub.Name = "OrionDevsHub"
+OrionDevsHub.ResetOnSpawn = false
+
+-- Proteger contra la detección nativa asignando a CoreGui
+if syn and syn.protect_gui then
+    syn.protect_gui(OrionDevsHub)
+    OrionDevsHub.Parent = CoreGui
+elseif gethui then
+    OrionDevsHub.Parent = gethui()
+else
+    OrionDevsHub.Parent = CoreGui
+end
+
+-- Marco Principal
+local MainFrame = Instance.new("Frame")
+MainFrame.Name = "MainFrame"
+MainFrame.Size = UDim2.new(0, 480, 0, 320)
+MainFrame.Position = UDim2.new(0.5, -240, 0.5, -160)
+MainFrame.BackgroundColor3 = Color3.fromRGB(10, 14, 26)
+MainFrame.BorderSizePixel = 0
+MainFrame.ClipsDescendants = true
+MainFrame.Parent = OrionDevsHub
+
+local MainCorner = Instance.new("UICorner")
+MainCorner.CornerRadius = UDim.new(0, 10)
+MainCorner.Parent = MainFrame
+
+-- Borde Neón Brillante
+local MainStroke = Instance.new("UIStroke")
+MainStroke.Color = Color3.fromRGB(0, 180, 255)
+MainStroke.Thickness = 2
+MainStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+MainStroke.Parent = MainFrame
+
+-- Header / Barra Superior (Arrastrable)
+local Header = Instance.new("Frame")
+Header.Name = "Header"
+Header.Size = UDim2.new(1, 0, 0, 40)
+Header.BackgroundColor3 = Color3.fromRGB(15, 22, 40)
+Header.BorderSizePixel = 0
+Header.Parent = MainFrame
+
+local HeaderCorner = Instance.new("UICorner")
+HeaderCorner.CornerRadius = UDim.new(0, 10)
+HeaderCorner.Parent = Header
+
+local Title = Instance.new("TextLabel")
+Title.Size = UDim2.new(0, 200, 1, 0)
+Title.Position = UDim2.new(0, 15, 0, 0)
+Title.BackgroundTransparency = 1
+Title.Text = "ORION DEVS"
+Title.TextColor3 = Color3.fromRGB(0, 220, 255)
+Title.TextSize = 18
+Title.Font = Enum.Font.GothamBold
+Title.TextXAlignment = Enum.TextXAlignment.Left
+Title.Parent = Header
+
+-- Botón de Minimizar (-)
+local MinimizeBtn = Instance.new("TextButton")
+MinimizeBtn.Size = UDim2.new(0, 30, 0, 30)
+MinimizeBtn.Position = UDim2.new(1, -70, 0, 5)
+MinimizeBtn.BackgroundColor3 = Color3.fromRGB(22, 32, 55)
+MinimizeBtn.Text = "-"
+MinimizeBtn.TextColor3 = Color3.fromRGB(0, 220, 255)
+MinimizeBtn.TextSize = 20
+MinimizeBtn.Font = Enum.Font.GothamBold
+MinimizeBtn.AutoButtonColor = false
+MinimizeBtn.Parent = Header
+
+local MinCorner = Instance.new("UICorner")
+MinCorner.CornerRadius = UDim.new(0, 6)
+MinCorner.Parent = MinimizeBtn
+
+-- Botón de Cerrar (X)
+local CloseBtn = Instance.new("TextButton")
+CloseBtn.Size = UDim2.new(0, 30, 0, 30)
+CloseBtn.Position = UDim2.new(1, -35, 0, 5)
+CloseBtn.BackgroundColor3 = Color3.fromRGB(22, 32, 55)
+CloseBtn.Text = "X"
+CloseBtn.TextColor3 = Color3.fromRGB(255, 60, 60)
+CloseBtn.TextSize = 14
+CloseBtn.Font = Enum.Font.GothamBold
+CloseBtn.AutoButtonColor = false
+CloseBtn.Parent = Header
+
+local CloseCorner = Instance.new("UICorner")
+CloseCorner.CornerRadius = UDim.new(0, 6)
+CloseCorner.Parent = CloseBtn
+
+-- Panel Lateral de Pestañas
+local TabHolder = Instance.new("Frame")
+TabHolder.Size = UDim2.new(0, 120, 1, -40)
+TabHolder.Position = UDim2.new(0, 0, 0, 40)
+TabHolder.BackgroundColor3 = Color3.fromRGB(12, 17, 30)
+TabHolder.BorderSizePixel = 0
+TabHolder.Parent = MainFrame
+
+local TabList = Instance.new("UIListLayout")
+TabList.SortOrder = Enum.SortOrder.LayoutOrder
+TabList.Padding = UDim.new(0, 5)
+TabList.Parent = TabHolder
+
+local TabPadding = Instance.new("UIPadding")
+TabPadding.PaddingTop = UDim.new(0, 10)
+TabPadding.PaddingLeft = UDim.new(0, 8)
+TabPadding.Parent = TabHolder
+
+-- Contenedor de Páginas
+local PageHolder = Instance.new("Frame")
+PageHolder.Size = UDim2.new(1, -130, 1, -50)
+PageHolder.Position = UDim2.new(0, 125, 0, 45)
+PageHolder.BackgroundTransparency = 1
+PageHolder.Parent = MainFrame
+
+-- Pestañas
+local ScriptsPage = Instance.new("ScrollingFrame")
+ScriptsPage.Size = UDim2.new(1, 0, 1, 0)
+ScriptsPage.BackgroundTransparency = 1
+ScriptsPage.BorderSizePixel = 0
+ScriptsPage.ScrollBarThickness = 3
+ScriptsPage.ScrollBarImageColor3 = Color3.fromRGB(0, 180, 255)
+ScriptsPage.Visible = true
+ScriptsPage.Parent = PageHolder
+
+local PageList = Instance.new("UIListLayout")
+PageList.SortOrder = Enum.SortOrder.LayoutOrder
+PageList.Padding = UDim.new(0, 8)
+PageList.Parent = ScriptsPage
+
+local SettingsPage = Instance.new("Frame")
+SettingsPage.Size = UDim2.new(1, 0, 1, 0)
+SettingsPage.BackgroundTransparency = 1
+SettingsPage.Visible = false
+SettingsPage.Parent = PageHolder
+
+-- ==========================================
+-- BOTÓN FLOTANTE REABRIR
+-- ==========================================
+
+local OpenBtn = Instance.new("TextButton")
+OpenBtn.Name = "OpenBtn"
+OpenBtn.Size = UDim2.new(0, 110, 0, 35)
+OpenBtn.Position = UDim2.new(0, 15, 0.5, -17)
+OpenBtn.BackgroundColor3 = Color3.fromRGB(10, 14, 26)
+OpenBtn.Text = "ORION DEVS"
+OpenBtn.TextColor3 = Color3.fromRGB(0, 220, 255)
+OpenBtn.Font = Enum.Font.GothamBold
+OpenBtn.TextSize = 12
+OpenBtn.Visible = false
+OpenBtn.Parent = OrionDevsHub
+
+local OpenCorner = Instance.new("UICorner")
+OpenCorner.CornerRadius = UDim.new(0, 8)
+OpenCorner.Parent = OpenBtn
+
+local OpenStroke = Instance.new("UIStroke")
+OpenStroke.Color = Color3.fromRGB(0, 180, 255)
+OpenStroke.Thickness = 2
+OpenStroke.Parent = OpenBtn
+
+-- ==========================================
+-- CREACIÓN DE PESTAÑAS Y BOTONES
+-- ==========================================
+
+local function CrearTab(nombre, paginaAsociada)
+    local TabBtn = Instance.new("TextButton")
+    TabBtn.Size = UDim2.new(1, -16, 0, 32)
+    TabBtn.BackgroundColor3 = Color3.fromRGB(18, 26, 45)
+    TabBtn.Text = nombre
+    TabBtn.TextColor3 = Color3.fromRGB(180, 200, 230)
+    TabBtn.Font = Enum.Font.GothamMedium
+    TabBtn.TextSize = 13
+    TabBtn.AutoButtonColor = false
+    TabBtn.Parent = TabHolder
+
+    local Corner = Instance.new("UICorner")
+    Corner.CornerRadius = UDim.new(0, 6)
+    Corner.Parent = TabBtn
+
+    TabBtn.MouseButton1Click:Connect(function()
+        ScriptsPage.Visible = false
+        SettingsPage.Visible = false
+        paginaAsociada.Visible = true
+    end)
+end
+
+CrearTab("Scripts", ScriptsPage)
+CrearTab("Ajustes", SettingsPage)
+
+local function CrearBotonScript(texto, desc, url)
+    local BtnFrame = Instance.new("Frame")
+    BtnFrame.Size = UDim2.new(1, -5, 0, 50)
+    BtnFrame.BackgroundColor3 = Color3.fromRGB(16, 24, 42)
+    BtnFrame.Parent = ScriptsPage
+
+    local BtnCorner = Instance.new("UICorner")
+    BtnCorner.CornerRadius = UDim.new(0, 6)
+    BtnCorner.Parent = BtnFrame
+
+    local ActionBtn = Instance.new("TextButton")
+    ActionBtn.Size = UDim2.new(1, 0, 1, 0)
+    ActionBtn.BackgroundTransparency = 1
+    ActionBtn.Text = ""
+    ActionBtn.Parent = BtnFrame
+
+    local BtnTitle = Instance.new("TextLabel")
+    BtnTitle.Size = UDim2.new(1, -10, 0, 22)
+    BtnTitle.Position = UDim2.new(0, 10, 0, 5)
+    BtnTitle.BackgroundTransparency = 1
+    BtnTitle.Text = texto
+    BtnTitle.TextColor3 = Color3.fromRGB(240, 245, 255)
+    BtnTitle.Font = Enum.Font.GothamBold
+    BtnTitle.TextSize = 14
+    BtnTitle.TextXAlignment = Enum.TextXAlignment.Left
+    BtnTitle.Parent = BtnFrame
+
+    local BtnDesc = Instance.new("TextLabel")
+    BtnDesc.Size = UDim2.new(1, -10, 0, 18)
+    BtnDesc.Position = UDim2.new(0, 10, 0, 25)
+    BtnDesc.BackgroundTransparency = 1
+    BtnDesc.Text = desc
+    BtnDesc.TextColor3 = Color3.fromRGB(120, 140, 170)
+    BtnDesc.Font = Enum.Font.Gotham
+    BtnDesc.TextSize = 11
+    BtnDesc.TextXAlignment = Enum.TextXAlignment.Left
+    BtnDesc.Parent = BtnFrame
+
+    ActionBtn.MouseEnter:Connect(function()
+        TweenService:Create(BtnFrame, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(24, 36, 64)}):Play()
+    end)
+    ActionBtn.MouseLeave:Connect(function()
+        TweenService:Create(BtnFrame, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(16, 24, 42)}):Play()
+    end)
+
+    ActionBtn.MouseButton1Click:Connect(function()
+        CargarScriptExterno(url, texto)
+    end)
+end
+
+-- Agregar Scripts Principales
+CrearBotonScript("Shaders", "Aplica efectos visuales de alta calidad.", "https://raw.githubusercontent.com/script-premiu/Shaders/refs/heads/main/1Shaders.txt")
+CrearBotonScript("TP Jugadores", "Teletransporte instantáneo a jugadores.", "https://raw.githubusercontent.com/script-premiu/Shaders/refs/heads/main/1TP-JUGADORES.txt")
+CrearBotonScript("Carfly", "Vuela con cualquier vehículo en el juego.", "https://raw.githubusercontent.com/script-premiu/CARFLY-ROBO/refs/heads/main/1A%20CARFLY-ROBO.txt")
+
+-- Elementos de Ajustes
+local SettingsLabel = Instance.new("TextLabel")
+SettingsLabel.Size = UDim2.new(1, 0, 0, 40)
+SettingsLabel.BackgroundTransparency = 1
+SettingsLabel.Text = "Presiona [RightControl] para ocultar/mostrar la interfaz."
+SettingsLabel.TextColor3 = Color3.fromRGB(180, 200, 230)
+SettingsLabel.Font = Enum.Font.Gotham
+SettingsLabel.TextSize = 12
+SettingsLabel.TextWrapped = true
+SettingsLabel.Parent = SettingsPage
+
+-- ==========================================
+-- SISTEMA DE ARRASTRE PARA LA VENTANA PRINCIPAL
+-- ==========================================
+
+local function HacerVentanaArrastrable(instanciaArrastrable, areaClic)
+    local dragging, dragInput, dragStart, startPos
+    areaClic = areaClic or instanciaArrastrable
+
+    local function update(input)
+        local delta = input.Position - dragStart
+        instanciaArrastrable.Position = UDim2.new(
+            startPos.X.Scale, startPos.X.Offset + delta.X,
+            startPos.Y.Scale, startPos.Y.Offset + delta.Y
+        )
+    end
+
+    areaClic.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = true
+            dragStart = input.Position
+            startPos = instanciaArrastrable.Position
+
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    dragging = false
+                end
+            end)
+        end
+    end)
+
+    areaClic.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+            dragInput = input
+        end
+    end)
+
+    UserInputService.InputChanged:Connect(function(input)
+        if input == dragInput and dragging then
+            update(input)
+        end
+    end)
+end
+
+HacerVentanaArrastrable(MainFrame, Header)
+
+-- ==========================================
+-- SISTEMA INTELIGENTE PARA EL BOTÓN FLOTANTE
+-- ==========================================
+
+local function ConfigurarBotonFlotanteInteligente(btn)
+    local dragging = false
+    local dragInput, dragStart, startPos
+    local clickStartPosition = Vector2.zero
+
+    local function update(input)
+        local delta = input.Position - dragStart
+        btn.Position = UDim2.new(
+            startPos.X.Scale, startPos.X.Offset + delta.X,
+            startPos.Y.Scale, startPos.Y.Offset + delta.Y
+        )
+    end
+
+    btn.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = true
+            dragStart = input.Position
+            clickStartPosition = Vector2.new(input.Position.X, input.Position.Y)
+            startPos = btn.Position
+
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    dragging = false
+                    -- Calcular la distancia que se movió el cursor desde que dio clic
+                    local endPosition = Vector2.new(input.Position.X, input.Position.Y)
+                    local distanceMoved = (endPosition - clickStartPosition).Magnitude
+                    
+                    -- Si se movió menos de 5 píxeles, cuenta como un Clic REAL para abrir la GUI
+                    if distanceMoved < 5 then
+                        MainFrame.Visible = true
+                        OpenBtn.Visible = false
+                    end
+                end
+            end)
+        end
+    end)
+
+    btn.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+            dragInput = input
+        end
+    end)
+
+    UserInputService.InputChanged:Connect(function(input)
+        if input == dragInput and dragging then
+            update(input)
+        end
+    end)
+end
+
+ConfigurarBotonFlotanteInteligente(OpenBtn)
+
+-- ==========================================
+-- LÓGICA DE MINIMIZAR Y TECLA DE ACCESO
+-- ==========================================
+
+local function ToggleUI()
+    MainFrame.Visible = not MainFrame.Visible
+    OpenBtn.Visible = not MainFrame.Visible
+end
+
+MinimizeBtn.MouseButton1Click:Connect(ToggleUI)
+
+CloseBtn.MouseButton1Click:Connect(function()
+    OrionDevsHub:Destroy()
+end)
+
+UserInputService.InputBegan:Connect(function(input, gpe)
+    if not gpe and input.KeyCode == Enum.KeyCode.RightControl then
+        ToggleUI()
+    end
+end)
