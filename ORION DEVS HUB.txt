@@ -272,7 +272,7 @@ local function CrearBotonScript(texto, desc, url)
 end
 
 -- Agregar Scripts Principales
-CrearBotonScript("Shaders", "Aplica efectos visuales de alta calidad.", "https://raw.githubusercontent.com/script-premiu/Shaders/refs/heads/main/shaders-freecam.txt")
+CrearBotonScript("Shaders y freecam", "Aplica efectos visuales de alta calidad.", "https://raw.githubusercontent.com/script-premiu/Shaders/refs/heads/main/shaders-freecam.txt")
 CrearBotonScript("TP Jugadores", "Teletransporte instantáneo a jugadores.", "https://raw.githubusercontent.com/script-premiu/Shaders/refs/heads/main/1TP-JUGADORES.txt")
 CrearBotonScript("Carfly", "Vuela con cualquier vehículo en el juego.", "https://raw.githubusercontent.com/script-premiu/CARFLY-ROBO/refs/heads/main/1A%20CARFLY-ROBO.txt")
 
